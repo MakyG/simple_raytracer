@@ -1,5 +1,6 @@
 # simple_raytracer
 Simple raytracer (adding objects, light, rendering)
+
 UI is console type
 
 Written in JetBrains - CLion
