@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <iostream>
+#include <limits>
 #include "Raytracer.h"
 
 void Raytracer::Render() {
@@ -9,15 +10,8 @@ void Raytracer::Render() {
 	const int width = 500;
 
 	// PREDEFINE COLORS
-	
-    const Vector white(255, 255, 255);
-    const Vector grey(100, 100, 100);
+
     const Vector black(0, 0, 0);
-    const Vector red(255, 0, 0);
-    const Vector green(0, 255, 0);
-    const Vector blue(0, 0, 255);
-    const Vector darkGrey(30, 30, 30);
-    const Vector yellow(255, 255, 0);
 
     // CREATE RENDERER FILE
     
@@ -46,19 +40,16 @@ void Raytracer::Render() {
     for (int y = 0; y < height; ++y) {
         for (int x = 0; x < width; ++x) {
 
-            // objects.push_back(std::make_shared<Sphere>(Vector(0, 0, 0), 5, Vector(255, 0, 0))); // TEST
-
-            double t;
-            pixColor = darkGrey;
+            pixColor = {0,0,0};
             
             double u = (double)x / width;
             double v = (double)y / height;
 
-            Vector hitPoint = p0 + (p1 - p0) * u + (p2 - p0) * v; // Point of intersection
+            Vector hitPoint = p0 + (p1 - p0) * u + (p2 - p0) * v;
             Vector rayDirection = hitPoint - cameraPosition;
             
             double closestIndex = -1;
-            double closestLength = 20000000;
+            double closestLength = std::numeric_limits<double>::max();
             Ray closestRay = Ray(cameraPosition, rayDirection.normalize(), 0);
 
             for(unsigned int i = 0; i < objects.size(); i++){
@@ -85,7 +76,7 @@ void Raytracer::Render() {
                     double lightStrength = std::clamp(diffuse.Dot(lightDirection), 0.0, 1.0);
                     Vector multiplicator = Vector(lights[i].color.x / 255, lights[i].color.y / 255, lights[i].color.z / 255) * lightStrength;
                     Vector calculatedColor = Vector(objectColor.x * multiplicator.x, objectColor.y * multiplicator.y, objectColor.z * multiplicator.z);
-                    pixColor = calculatedColor;
+                    pixColor = pixColor + calculatedColor;
                 }
             }
             out << (int)pixColor.x << ' ' << (int)pixColor.y << ' ' << (int)pixColor.z << '\n';
